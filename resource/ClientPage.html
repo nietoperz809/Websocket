@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>HTML5 WebSocket-Client</title>
+    <style>
+        header {
+            background-color: navy;
+            position: fixed;
+            padding: 10px;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        #message {
+            margin-left: 2em;
+            margin-top: 2em;
+            color: yellow;
+            word-break: break-all;
+            word-wrap: break-word;
+            white-space: pre;
+            white-space: -moz-pre-wrap;
+            white-space: pre-wrap;
+            white-space: pre\9;
+        }
+
+    </style>
+</head>
+<body bgcolor="#000000">>
+<header>
+    <input id="userInput" type="text">
+    <button onclick="javascript:cls()">cls</button>
+</header>
+<pre id="message"></pre>
+
+<script type="text/javascript" src="jquery.js"></script>
+<script>
+
+    var socket;
+
+    function cls()
+    {
+        document.getElementById('message').innerHTML='';
+    }
+
+    function showMessage(text)
+    {
+        var div = document.getElementById('message');
+        div.innerHTML = div.innerHTML + '<br>' + text;
+        window.scrollTo (0, document.body.scrollHeight);
+    }
+
+    function subscribeToWebSocket()
+    {
+        socket = new WebSocket('ws://localhost:8080/websocket-echo');
+
+        socket.onopen = function()
+        {
+            showMessage('Connected to WebSocket.');
+        };
+
+        socket.onmessage = function(msg)
+        {
+            showMessage(msg.data);
+        };
+
+        socket.onerror = function(msg)
+        {
+            showMessage('Sorry but there was an error.');
+        };
+
+        socket.onclose = function()
+        {
+            showMessage('Server offline.');
+        };
+    }
+
+    $(document).ready(function()
+    {
+        subscribeToWebSocket();
+
+        var txt = $('#userInput');
+        txt.keydown(function (e)
+        {
+            if(e.keyCode === 13)
+            {
+                var input = txt.val();
+                txt.val('');
+                socket.send(input);
+            }
+        });
+    });
+
+</script>
+
+
+</body>
+</html>

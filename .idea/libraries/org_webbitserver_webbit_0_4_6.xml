@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="org.webbitserver:webbit:0.4.6" type="repository">
+    <properties maven-id="org.webbitserver:webbit:0.4.6" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/webbitserver/webbit/0.4.6/webbit-0.4.6.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jboss/netty/netty/3.2.7.Final/netty-3.2.7.Final.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
