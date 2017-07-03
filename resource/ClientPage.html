@@ -2,8 +2,10 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>HTML5 WebSocket-Client</title>
+    <title>HTML5 WebSocket C64-BASIC</title>
     <style>
+        #stopbutton {background-color: red;}
+        #runbutton {background-color: lawngreen;}
         header {
             background-color: navy;
             position: fixed;
@@ -12,7 +14,7 @@
             left: 0;
             right: 0;
         }
-        #message {
+        #output {
             margin-left: 2em;
             margin-top: 2em;
             color: yellow;
@@ -29,25 +31,49 @@
 <body bgcolor="#000000">>
 <header>
     <input id="userInput" type="text">
-    <button onclick="javascript:cls()">cls</button>
+    <button id="stopbutton" onclick="stop()">stop</button>
+    <button id="runbutton" onclick="run()">run</button>
+    <button onclick="cls()">cls</button>
+    <button onclick="list()">list</button>
+    <button onclick="directory()">dir</button>
 </header>
-<pre id="message"></pre>
+<pre id="output"></pre>
 
 <script type="text/javascript" src="jquery.js"></script>
 <script>
 
+    var message;
     var socket;
+
+    function stop()
+    {
+        socket.send('stop');
+    }
+
+    function directory()
+    {
+        socket.send('dir');
+    }
+
+    function list()
+    {
+        socket.send('list');
+    }
+
+    function run()
+    {
+        socket.send('run');
+    }
 
     function cls()
     {
-        document.getElementById('message').innerHTML='';
+        message.innerHTML='';
     }
 
     function showMessage(text)
     {
-        var div = document.getElementById('message');
-        div.innerHTML = div.innerHTML + '<br>' + text;
-        window.scrollTo (0, document.body.scrollHeight);
+        message.innerHTML = message.innerHTML + text;
+        //window.scrollTo (0, document.body.scrollHeight);
     }
 
     function subscribeToWebSocket()
@@ -56,7 +82,7 @@
 
         socket.onopen = function()
         {
-            showMessage('Connected to WebSocket.');
+            showMessage('BASIC V2 Ready.\n');
         };
 
         socket.onmessage = function(msg)
@@ -75,8 +101,10 @@
         };
     }
 
+    // start jQuery
     $(document).ready(function()
     {
+        message = document.getElementById('output');
         subscribeToWebSocket();
 
         var txt = $('#userInput');
@@ -92,7 +120,5 @@
     });
 
 </script>
-
-
 </body>
 </html>
