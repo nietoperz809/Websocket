@@ -13,7 +13,7 @@ class CommandLineDispatcher
     final ProgramStore store = new ProgramStore();
     BasicRunner basicRunner;
 
-    private int speed = 1000;
+    private int speed = 900;
 
     public CommandLineDispatcher (WebSocketHandler r)
     {
@@ -159,7 +159,7 @@ class CommandLineDispatcher
 //        }
         else if (s.equals("run"))
         {
-            run(false);
+            run(true);
         }
         else if (s.equals("dir"))
         {

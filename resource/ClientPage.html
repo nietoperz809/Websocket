@@ -4,15 +4,18 @@
     <meta charset="utf-8"/>
     <title>HTML5 WebSocket C64-BASIC</title>
     <style>
-        #stopbutton {
+        #stopbutton
+        {
             background-color: red;
         }
 
-        #runbutton {
+        #runbutton
+        {
             background-color: lawngreen;
         }
 
-        header {
+        header
+        {
             background-color: navy;
             position: fixed;
             padding: 10px;
@@ -21,7 +24,14 @@
             right: 0;
         }
 
-        #output {
+        #errtxt
+        {
+            color: white;
+        }
+
+        #output
+        {
+            font-family: monospace;
             margin-left: 2em;
             margin-top: 2em;
             color: yellow;
@@ -32,6 +42,26 @@
             white-space: pre-wrap;
             white-space: pre \9;
         }
+
+        .blink
+        {
+            animation-duration: 1s;
+            animation-name: blink;
+            animation-iteration-count: infinite;
+            animation-direction: alternate;
+            animation-timing-function: ease-in-out;
+        }
+        @keyframes blink
+        {
+            from
+            {
+                opacity: 1;
+            }
+            to
+            {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body bgcolor="#000000">>
@@ -41,11 +71,10 @@
                  cls      - clear output
                  speed    - set delay value
                  save     - store program to disk
-                 stop     - stop a running program
                  new      - clear program memory
                  list     - show stored program
-                 prettify - re-format a program
-                 renumber - change line numbers
+                 prettify - re-format the code
+                 renumber - new line numbering
                  load     - load a program from disk"
            id="userInput" type="text">
     <button id="stopbutton" onclick="stop()">stop</button>
@@ -53,17 +82,19 @@
     <button onclick="cls()">cls</button>
     <button onclick="list()">list</button>
     <button onclick="directory()">dir</button>
+    <span id="errtxt" class="blink"></span>
 </header>
-<p id="output"></p>
+<div id="output"></div>
 
 <script type="text/javascript" src="jquery.js"></script>
 <script>
 
     var message;
+    var error;
     var socket;
 
     function stop() {
-        socket.send('stop');
+        socket.send('--stop!!');
     }
 
     function directory() {
@@ -82,42 +113,63 @@
         message.innerHTML = '';
     }
 
-    function showMessage(text) {
-        message.innerHTML = message.innerHTML + text;
+    function showError(text)
+    {
+        error.innerHTML = text;
+    }
+
+    function showMessage(text)
+    {
+        if (message.innerHTML.length > 10000)
+            message.innerHTML = text;
+        else
+            message.innerHTML = message.innerHTML + text;
         //window.scrollTo (0, document.body.scrollHeight);
     }
 
-    function subscribeToWebSocket() {
+    function subscribeToWebSocket()
+    {
         socket = new WebSocket('ws://localhost:8080/websocket-echo');
 
-        socket.onopen = function () {
+        socket.onopen = function ()
+        {
             showMessage('BASIC V2 Ready.\n');
         };
 
-        socket.onmessage = function (msg) {
+        socket.onmessage = function (msg)
+        {
             showMessage(msg.data);
         };
 
-        socket.onerror = function (msg) {
-            showMessage('Sorry but there was an error.');
+        socket.onerror = function (msg)
+        {
+            showError('Sorry but there was an error');
         };
 
-        socket.onclose = function () {
-            showMessage('Server offline.');
+        socket.onclose = function ()
+        {
+            showError('Server is offline!');
         };
     }
 
     // start jQuery
-    $(document).ready(function () {
+    $(document).ready(function ()
+    {
         message = document.getElementById('output');
+        error = document.getElementById('errtxt');
         subscribeToWebSocket();
 
         var txt = $('#userInput');
-        txt.keydown(function (e) {
-            if (e.keyCode === 13) {
+        txt.keydown(function (e)
+        {
+            if (e.keyCode === 13)
+            {
                 var input = txt.val();
                 txt.val('');
-                socket.send(input);
+                if (input === 'cls')
+                    message.innerHTML = '';
+                else
+                    socket.send(input);
             }
         });
     });

@@ -2,6 +2,7 @@ package server;
 
 import org.webbitserver.BaseWebSocketHandler;
 import org.webbitserver.WebSocketConnection;
+import shell.BasicRunner;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -13,15 +14,22 @@ public class WebSocketHandler extends BaseWebSocketHandler
     private final ArrayBlockingQueue<String> receiveQ = new ArrayBlockingQueue<>(100);
     private WebSocketConnection conn;
 
+    private BasicRunner basicrunner;
+
+    public void setBasicRunner (BasicRunner bas)
+    {
+        basicrunner = bas;
+    }
+
     public String read()
     {
         try
         {
             return receiveQ.take();
         }
-        catch (InterruptedException e)
+        catch (InterruptedException ignored)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return null;
     }
@@ -51,7 +59,18 @@ public class WebSocketHandler extends BaseWebSocketHandler
     {
         try
         {
-            receiveQ.put(message);
+            if (message.equals("--stop!!"))
+            {
+                System.out.println("stop signal");
+                if (basicrunner != null)
+                {
+                    basicrunner.stop();
+                }
+            }
+            else
+            {
+                receiveQ.put(message);
+            }
         }
         catch (InterruptedException e)
         {

@@ -11,6 +11,7 @@ public class BasicRunner implements Runnable
 {
     private static volatile boolean running = false;
     private Basic olsenBasic;
+    private Thread basicThread;
 
     public BasicRunner (String[] program, int speed, WebSocketHandler r)
     {
@@ -19,6 +20,7 @@ public class BasicRunner implements Runnable
             return;
         }
         olsenBasic = new Basic(program);
+        r.setBasicRunner(this);
         if (speed > 0)
         {
             DelayTracer t = new DelayTracer(speed);
@@ -51,6 +53,20 @@ public class BasicRunner implements Runnable
         }
     }
 
+    public void stop()
+    {
+        olsenBasic.runStop();
+        try
+        {
+            Thread.sleep(100);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        basicThread.interrupt();
+    }
+
     /**
      * Start BASIC task
      *
@@ -63,28 +79,21 @@ public class BasicRunner implements Runnable
             System.out.println("already running ...");
             return;
         }
-        Thread t = new Thread (this);
-        t.start();
+        basicThread = new Thread (this);
+        basicThread.start();
         if (!synchronous)
         {
             return;
         }
         try
         {
-            t.join();
+            basicThread.join();
         }
-        catch (Exception e)
+        catch (Exception ignored)
         {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
-
-// --Commented out by Inspection START (1/20/2017 5:31 AM):
-//    public boolean isRunning ()
-//    {
-//        return running;
-//    }
-// --Commented out by Inspection STOP (1/20/2017 5:31 AM)
 
     public Basic getOlsenBasic ()
     {
@@ -99,9 +108,9 @@ public class BasicRunner implements Runnable
         {
             olsenBasic.run();
         }
-        catch (Exception ex)
+        catch (Exception ignored)
         {
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
         finally
         {
