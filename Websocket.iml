@@ -6,6 +6,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/resource" type="java-resource" />
     </content>
+    <content url="file://$MODULE_DIR$/out" />
+    <content url="file://$MODULE_DIR$/out/artifacts" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="org.webbitserver:webbit:0.4.6" level="project" />
