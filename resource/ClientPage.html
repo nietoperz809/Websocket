@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <title>HTML5 WebSocket C64-BASIC</title>
     <style>
-        #stopbutton {background-color: red;}
-        #runbutton {background-color: lawngreen;}
+        #stopbutton {
+            background-color: red;
+        }
+
+        #runbutton {
+            background-color: lawngreen;
+        }
+
         header {
             background-color: navy;
             position: fixed;
@@ -14,6 +20,7 @@
             left: 0;
             right: 0;
         }
+
         #output {
             margin-left: 2em;
             margin-top: 2em;
@@ -23,21 +30,31 @@
             white-space: pre;
             white-space: -moz-pre-wrap;
             white-space: pre-wrap;
-            white-space: pre\9;
+            white-space: pre \9;
         }
-
     </style>
 </head>
 <body bgcolor="#000000">>
 <header>
-    <input id="userInput" type="text">
+    <input title="Commands are:
+                 run      - run BASIC program
+                 cls      - clear output
+                 speed    - set delay value
+                 save     - store program to disk
+                 stop     - stop a running program
+                 new      - clear program memory
+                 list     - show stored program
+                 prettify - re-format a program
+                 renumber - change line numbers
+                 load     - load a program from disk"
+           id="userInput" type="text">
     <button id="stopbutton" onclick="stop()">stop</button>
     <button id="runbutton" onclick="run()">run</button>
     <button onclick="cls()">cls</button>
     <button onclick="list()">list</button>
     <button onclick="directory()">dir</button>
 </header>
-<pre id="output"></pre>
+<p id="output"></p>
 
 <script type="text/javascript" src="jquery.js"></script>
 <script>
@@ -45,73 +62,59 @@
     var message;
     var socket;
 
-    function stop()
-    {
+    function stop() {
         socket.send('stop');
     }
 
-    function directory()
-    {
+    function directory() {
         socket.send('dir');
     }
 
-    function list()
-    {
+    function list() {
         socket.send('list');
     }
 
-    function run()
-    {
+    function run() {
         socket.send('run');
     }
 
-    function cls()
-    {
-        message.innerHTML='';
+    function cls() {
+        message.innerHTML = '';
     }
 
-    function showMessage(text)
-    {
+    function showMessage(text) {
         message.innerHTML = message.innerHTML + text;
         //window.scrollTo (0, document.body.scrollHeight);
     }
 
-    function subscribeToWebSocket()
-    {
+    function subscribeToWebSocket() {
         socket = new WebSocket('ws://localhost:8080/websocket-echo');
 
-        socket.onopen = function()
-        {
+        socket.onopen = function () {
             showMessage('BASIC V2 Ready.\n');
         };
 
-        socket.onmessage = function(msg)
-        {
+        socket.onmessage = function (msg) {
             showMessage(msg.data);
         };
 
-        socket.onerror = function(msg)
-        {
+        socket.onerror = function (msg) {
             showMessage('Sorry but there was an error.');
         };
 
-        socket.onclose = function()
-        {
+        socket.onclose = function () {
             showMessage('Server offline.');
         };
     }
 
     // start jQuery
-    $(document).ready(function()
-    {
+    $(document).ready(function () {
         message = document.getElementById('output');
         subscribeToWebSocket();
 
         var txt = $('#userInput');
-        txt.keydown(function (e)
-        {
-            if(e.keyCode === 13)
-            {
+        txt.keydown(function (e) {
+            if (e.keyCode === 13) {
                 var input = txt.val();
                 txt.val('');
                 socket.send(input);
