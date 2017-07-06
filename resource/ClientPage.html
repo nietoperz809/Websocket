@@ -14,6 +14,11 @@
             background-color: lawngreen;
         }
 
+        #killer
+        {
+            float: right;
+        }
+
         header
         {
             background-color: navy;
@@ -22,6 +27,7 @@
             top: 0;
             left: 0;
             right: 0;
+            z-index: 1;
         }
 
         #errtxt
@@ -34,9 +40,12 @@
             font-family: monospace;
             font-size: 170%;
             line-height: 80%;
-            margin-left: 1em;
-            margin-top: 1em;
             color: yellow;
+
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .blink
@@ -80,6 +89,7 @@
     <button onclick="list()">list</button>
     <button onclick="directory()">dir</button>
     <span id="errtxt" class="blink"></span>
+    <button id="killer" onclick="kill()">kill server</button>
 </header>
 <pre id="output"></pre>
 
@@ -90,8 +100,15 @@
     var error;
     var socket;
 
-    function stop() {
+    function stop()
+    {
         socket.send('--stop!!');
+    }
+
+    function kill()
+    {
+        socket.send('--kill!!');
+        $('#killer').hide();
     }
 
     function directory() {
@@ -107,12 +124,12 @@
     }
 
     function cls() {
-        message.innerHTML = '';
+        message.innerText = '';
     }
 
     function showError(text)
     {
-        error.innerHTML = text;
+        error.innerText = text;
     }
 
     var line = "";
@@ -129,7 +146,7 @@
             var c = text[i];
             if (c === '\n')
             {
-                message.innerHTML = message.innerHTML + line + pad.substring(line.length)+'\n';
+                message.innerText = message.innerText + line + pad.substring(line.length)+'\n';
                 line = "";
             }
             else
@@ -137,14 +154,14 @@
                 line = line + c;
                 if (line.length === 40)
                 {
-                    message.innerHTML = message.innerHTML + line + '\n';
+                    message.innerText = message.innerText + line + '\n';
                     line = "";
                 }
             }
         }
-        if (message.innerHTML.length >= 1000)
+        while (message.innerText.length >= 1040)
         {
-            message.innerHTML = message.innerHTML.substr(41);
+            message.innerText = message.innerText.substr(41);
         }
     }
 //    function chunkString(str, length)
@@ -162,7 +179,7 @@
 //            {
 //                var diff = 41-l;
 //                var spc = Array(diff).join('.');
-//                message.innerHTML = message.innerHTML + entry + spc + '\n';
+//                message.innerText = message.innerText + entry + spc + '\n';
 //            }
 //        });
 //    }
@@ -181,14 +198,14 @@
 //                var diff = 41-l;
 //                //alert(l+"/"+diff);
 //                var spc = Array(diff).join('.');
-//                message.innerHTML = message.innerHTML + entry + spc + '\n';
+//                message.innerText = message.innerText + entry + spc + '\n';
 //            }
 //        });
 
-//        if (message.innerHTML.length > 10000)
-//            message.innerHTML = text;
+//        if (message.innerText.length > 10000)
+//            message.innerText = text;
 //        else
-//            message.innerHTML = message.innerHTML + text;
+//            message.innerText = message.innerText + text;
         //window.scrollTo (0, document.body.scrollHeight);
 //    }
 
@@ -232,7 +249,7 @@
                 var input = txt.val();
                 txt.val('');
                 if (input === 'cls')
-                    message.innerHTML = '';
+                    message.innerText = '';
                 else
                     socket.send(input);
             }

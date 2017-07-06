@@ -67,6 +67,10 @@ public class WebSocketHandler extends BaseWebSocketHandler
                     basicrunner.stop();
                 }
             }
+            else if (message.equals("--kill!!"))
+            {
+                System.exit(-1);
+            }
             else
             {
                 receiveQ.put(message);
