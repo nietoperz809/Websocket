@@ -130,6 +130,13 @@ class CommandLineDispatcher
         _r.write(ProgramStore.OK);
     }
 
+    private void edit (String[] in)
+    {
+        int num = Integer.parseInt(in[1]);
+        String[] line = store.list(num, num);
+        _r.write("++EDIT!!"+line[0]);
+    }
+
     /**
      * Main function. Runs in a separate thread
      * @param in
@@ -142,6 +149,10 @@ class CommandLineDispatcher
         if (split[0].toLowerCase().equals("list"))
         {
             list (split);
+        }
+        else if (split[0].toLowerCase().equals("edit"))
+        {
+            edit (split);
         }
         else if (s.equals("stop"))
         {
@@ -162,10 +173,6 @@ class CommandLineDispatcher
         {
             renumber (split);
         }
-//        else if (s.equals("cls"))
-//        {
-//            //m_screen.matrix.clearScreen();
-//        }
         else if (s.equals("run"))
         {
             run(true);
