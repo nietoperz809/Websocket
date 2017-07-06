@@ -32,15 +32,10 @@
         #output
         {
             font-family: monospace;
-            margin-left: 2em;
-            margin-top: 2em;
+            font-size: 200%;
+            margin-left: 1em;
+            margin-top: 1em;
             color: yellow;
-            word-break: break-all;
-            word-wrap: break-word;
-            white-space: pre;
-            white-space: -moz-pre-wrap;
-            white-space: pre-wrap;
-            white-space: pre \9;
         }
 
         .blink
@@ -84,7 +79,7 @@
     <button onclick="directory()">dir</button>
     <span id="errtxt" class="blink"></span>
 </header>
-<div id="output"></div>
+<pre id="output"></pre>
 
 <script type="text/javascript" src="jquery.js"></script>
 <script>
@@ -118,14 +113,73 @@
         error.innerHTML = text;
     }
 
-    function showMessage(text)
+    var line = "";
+    var pad = Array(41).join(' ');  // 40 spaces
+    function showMessage (text)
     {
-        if (message.innerHTML.length > 10000)
-            message.innerHTML = text;
-        else
-            message.innerHTML = message.innerHTML + text;
-        //window.scrollTo (0, document.body.scrollHeight);
+        for (var i = 0, len = text.length; i < len; i++)
+        {
+            var c = text[i];
+            if (c === '\n')
+            {
+                message.innerHTML = message.innerHTML + line + pad.substring(line.length)+'\n';
+                line = "";
+            }
+            else
+            {
+                line = line + c;
+                if (line.length === 40)
+                {
+                    message.innerHTML = message.innerHTML + line + '\n';
+                    line = "";
+                }
+            }
+        }
     }
+//    function chunkString(str, length)
+//    {
+//        return str.match(new RegExp('.{1,' + length + '}', 'g'));
+//    }
+//
+//    function showMessage(text)
+//    {
+//        var sp = chunkString (text,40); // .replace(/(\r\n|\n|\r)/gm,"")
+//        sp.forEach(function(entry)
+//        {
+//            var l = entry.length;
+//            if (l !== 0)
+//            {
+//                var diff = 41-l;
+//                var spc = Array(diff).join('.');
+//                message.innerHTML = message.innerHTML + entry + spc + '\n';
+//            }
+//        });
+//    }
+
+//    function showMessage(text)
+//    {
+//        alert (text);
+//        var sp = text.split ("/\n/");
+//        alert (sp);
+//        sp.forEach(function(entry)
+//        {
+//            entry = entry.replace(/(\r\n|\n|\r)/gm,"");
+//            var l = entry.length;
+//            if (l !== 0)
+//            {
+//                var diff = 41-l;
+//                //alert(l+"/"+diff);
+//                var spc = Array(diff).join('.');
+//                message.innerHTML = message.innerHTML + entry + spc + '\n';
+//            }
+//        });
+
+//        if (message.innerHTML.length > 10000)
+//            message.innerHTML = text;
+//        else
+//            message.innerHTML = message.innerHTML + text;
+        //window.scrollTo (0, document.body.scrollHeight);
+//    }
 
     function subscribeToWebSocket()
     {

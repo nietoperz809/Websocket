@@ -82,6 +82,15 @@ class CommandLineDispatcher
         }
     }
 
+    private void sendStringArray (String[] arr)
+    {
+        for (String s : arr)
+        {
+            String formatted = String.format("\n%s",s);
+            _r.write(formatted);
+        }
+    }
+
     private void list (String[] split)
     {
         if (split.length == 2)
@@ -91,11 +100,11 @@ class CommandLineDispatcher
                 int i1 = Integer.parseInt(split[1]);  // single number
                 if (i1>=0) // positive
                 {
-                    _r.write(store.list(i1,i1));
+                    sendStringArray(store.list(i1,i1));
                 }
                 else // negative
                 {
-                    _r.write(store.list(0,-i1));
+                    sendStringArray(store.list(0,-i1));
                 }
             }
             catch (NumberFormatException ex)
@@ -111,7 +120,7 @@ class CommandLineDispatcher
                 {
                     i2 = Integer.MAX_VALUE;
                 }
-                _r.write(store.list(i1, i2));
+                sendStringArray(store.list(i1, i2));
             }
         }
         else  // no args

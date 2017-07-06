@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeSet;
 import java.util.stream.Stream;
@@ -139,20 +140,21 @@ public class ProgramStore
         return ok ? OK : ERROR;
     }
 
-    public String list (int min, int max)
+    public String[] list (int min, int max)
     {
         //noinspection unchecked
         TreeSet<String> clone = (TreeSet<String>) store.clone();  // avoid java.util.ConcurrentModificationException
-        StringBuilder sb = new StringBuilder();
+        ArrayList<String> list = new ArrayList<>();
         for (String s : clone)
         {
             int num = getLineNumber(s);
             if (num>=min && num<=max)
             {
-                sb.append(s).append('\n');
+                list.add(s);
             }
         }
-        return sb.toString();
+        String[] out = new String[list.size()];
+        return list.toArray(out);
     }
 
     @Override
