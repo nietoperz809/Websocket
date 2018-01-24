@@ -9,7 +9,7 @@ import java.io.File;
  */
 class CommandLineDispatcher
 {
-    private final WebSocketHandler _r;
+    private final WebSocketHandler socketHandler;
     final ProgramStore store = new ProgramStore();
     BasicRunner basicRunner;
 
@@ -17,14 +17,14 @@ class CommandLineDispatcher
 
     public CommandLineDispatcher (WebSocketHandler r)
     {
-        _r = r;
+        socketHandler = r;
         new Thread(() ->
         {
             while(!Thread.interrupted())
             {
                 try
                 {
-                    handleInput(_r.read());
+                    handleInput(socketHandler.read());
                 }
                 catch (Exception e)
                 {
@@ -43,14 +43,14 @@ class CommandLineDispatcher
             {
                 String formatted = String.format("\n%-15s = %d",
                         fileEntry.getName(), fileEntry.length() );
-                _r.write(formatted);
+                socketHandler.write(formatted);
             }
         }
     }
 
     private void run (boolean sync)
     {
-        basicRunner = new BasicRunner(store.toArray(), speed, _r);
+        basicRunner = new BasicRunner(store.toArray(), speed, socketHandler);
         basicRunner.start(sync);
     }
 
@@ -74,11 +74,11 @@ class CommandLineDispatcher
                     pf.doRenumber(va, vb);
                     break;
             }
-            _r.write(ProgramStore.OK);
+            socketHandler.write(ProgramStore.OK);
         }
         catch (Exception ex)
         {
-            _r.write(ProgramStore.ERROR);
+            socketHandler.write(ProgramStore.ERROR);
         }
     }
 
@@ -87,7 +87,7 @@ class CommandLineDispatcher
         for (String s : arr)
         {
             String formatted = String.format("\n%s",s);
-            _r.write(formatted);
+            socketHandler.write(formatted);
         }
     }
 
@@ -125,16 +125,22 @@ class CommandLineDispatcher
         }
         else  // no args
         {
-            _r.write(store.toString());
+            socketHandler.write(store.toString());
         }
-        _r.write(ProgramStore.OK);
+        socketHandler.write(ProgramStore.OK);
+    }
+
+    private void say (String in)
+    {
+        in = in.substring(4);  // skip "say "
+        socketHandler.write ("++SAY!!"+in);
     }
 
     private void edit (String[] in)
     {
         int num = Integer.parseInt(in[1]);
         String[] line = store.list(num, num);
-        _r.write("++EDIT!!"+line[0]);
+        socketHandler.write("++EDIT!!"+line[0]);
     }
 
     /**
@@ -146,13 +152,18 @@ class CommandLineDispatcher
         String s = in.trim();
         String[] split = s.split(" ");
         s = s.toLowerCase();
-        if (split[0].toLowerCase().equals("list"))
+        split[0] = split[0].toLowerCase();
+        if (split[0].equals("list"))
         {
             list (split);
         }
-        else if (split[0].toLowerCase().equals("edit"))
+        else if (split[0].equals("edit"))
         {
             edit (split);
+        }
+        else if (split[0].equals("say"))
+        {
+            say (s);
         }
         else if (s.equals("stop"))
         {
@@ -162,14 +173,14 @@ class CommandLineDispatcher
         else if (s.equals("new"))
         {
             store.clear();
-            _r.write(ProgramStore.OK);
+            socketHandler.write(ProgramStore.OK);
         }
         else if (s.equals ("prettify"))
         {
             new Prettifier(store).doPrettify();
-            _r.write(ProgramStore.OK);
+            socketHandler.write(ProgramStore.OK);
         }
-        else if (split[0].toLowerCase().equals("renumber"))
+        else if (split[0].equals("renumber"))
         {
             renumber (split);
         }
@@ -180,29 +191,29 @@ class CommandLineDispatcher
         else if (s.equals("dir"))
         {
             dir();
-            _r.write("\n"+ProgramStore.OK);
+            socketHandler.write("\n"+ProgramStore.OK);
         }
-        else if (split[0].toLowerCase().equals("speed"))
+        else if (split[0].equals("speed"))
         {
             try
             {
                 speed = Integer.parseInt(split[1]);
-                _r.write("\n"+ProgramStore.OK);
+                socketHandler.write("\n"+ProgramStore.OK);
             }
             catch (NumberFormatException ex)
             {
-                _r.write("\n"+ProgramStore.ERROR);
+                socketHandler.write("\n"+ProgramStore.ERROR);
             }
         }
-        else if (split[0].toLowerCase().equals("save"))
+        else if (split[0].equals("save"))
         {
             String msg = store.save(split[1]);
-            _r.write(msg);
+            socketHandler.write(msg);
         }
-        else if (split[0].toLowerCase().equals("load"))
+        else if (split[0].equals("load"))
         {
             String msg = store.load(split[1]);
-            _r.write(msg);
+            socketHandler.write(msg);
         }
         else
         {
@@ -212,7 +223,7 @@ class CommandLineDispatcher
             }
             catch (Exception unused)
             {
-                _r.write(BasicRunner.runSingleLine(s, _r));
+                socketHandler.write(BasicRunner.runSingleLine(s, socketHandler));
             }
         }
     }

@@ -81,7 +81,8 @@
                  prettify - re-format the code
                  edit     - edit single line
                  renumber - new line numbering
-                 load     - load a program from disk"
+                 load     - load a program from disk
+                 say      - speak some text"
            id="userInput" type="text" size ="50">
     <button id="stopbutton" onclick="stop()">stop</button>
     <button id="runbutton" onclick="run()">run</button>
@@ -100,6 +101,7 @@
     var message;
     var error;
     var socket;
+    var sam;
 
     function stop()
     {
@@ -140,6 +142,11 @@
         if (text.startsWith("++EDIT!!"))
         {
             $('#userInput').val(text.substring(8));
+            return;
+        }
+        if (text.startsWith("++SAY!!"))
+        {
+            sam.speak(text.substring(7));
             return;
         }
         for (var i = 0, len = text.length; i < len; i++)
@@ -242,8 +249,8 @@
         error = document.getElementById('errtxt');
         subscribeToWebSocket();
 
-        var sam = new SamJs();
-        sam.speak('hello');
+        sam = new SamJs();
+        sam.speak('Commodore 64 Ready');
 
         var txt = $('#userInput');
         txt.keydown(function (e)
