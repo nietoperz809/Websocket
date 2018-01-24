@@ -38,6 +38,10 @@ public class SimpleWebserver
         {
             SimpleWebserver.this.sendResource("jquery-3.2.1.min.js", os);
         }
+        else if (txt.equals("/samjs.js")) //send jquery
+        {
+            SimpleWebserver.this.sendResource("samjs.js", os);
+        }
         else if (txt.equals("/favicon.ico")) //send icon
         {
             SimpleWebserver.this.sendResource("logo.png", os);

@@ -94,6 +94,7 @@
 <pre id="output"></pre>
 
 <script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="samjs.js"></script>
 <script>
 
     var message;
@@ -234,12 +235,15 @@
         };
     }
 
-    // start jQuery
+    // start jQuery and samjs
     $(document).ready(function ()
     {
         message = document.getElementById('output');
         error = document.getElementById('errtxt');
         subscribeToWebSocket();
+
+        var sam = new SamJs();
+        sam.speak('hello');
 
         var txt = $('#userInput');
         txt.keydown(function (e)
