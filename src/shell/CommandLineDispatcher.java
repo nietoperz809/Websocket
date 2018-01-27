@@ -13,7 +13,7 @@ class CommandLineDispatcher
     final ProgramStore store = new ProgramStore();
     BasicRunner basicRunner;
 
-    private int speed = 900;
+    private int speed = 300;  // default speed
 
     public CommandLineDispatcher (WebSocketHandler r)
     {
